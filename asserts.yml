@@ -20,7 +20,9 @@
   gather_facts: False
   tags: always
 
-  vars_files: paths.yml
+  vars: { dir: &dir '{{ ansible_facts.env.PWD }}' }
+
+  vars_files: '{{ dir }}/paths.yml'
 
   tasks:
 
@@ -45,7 +47,7 @@
         name: Assert running_ansible_version ({{ running_ansible_version }}) >= {{ local_min_ansible_version }}
 
       - stat: { path: '{{ file }}' }
-        vars: &prf { file: '{{ private_repos_file }}' }
+        vars: &prf { file: '{{ dir}}/{{ private_repos_file }}' }
         register: st
         name: Stat {{ file }}
       - assert:
@@ -57,7 +59,7 @@
         name: Assert {{ file }}
 
       - stat: { path: '{{ file }}' }
-        vars: &kf { file: '{{ keys_file }}' }
+        vars: &kf { file: '{{ dir}}/{{ keys_file }}' }
         register: st
         name: Stat {{ file }}
       - assert:
@@ -72,6 +74,9 @@
   hosts: '{{ Hosts | default("all") }}'
   gather_facts: False
   tags: always
+
+  vars: { dir: *dir }
+
   tasks:
 
     - <<: *loo
@@ -93,7 +98,7 @@
 
       - git_config:
           name: user.email
-          repo: .
+          repo: '{{ dir }}'
           scope: local
         register: git_config
         name: Get user email from git config

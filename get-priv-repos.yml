@@ -1,21 +1,22 @@
 #!/usr/bin/env ansible-playbook
 ---
 
-- import_playbook: asserts.yml
+#- import_playbook: asserts.yml
 
 - hosts: localhost
   gather_facts: False
 
-  vars_files: [ paths.yml, private-repos.yml ]
-
   vars:
+    dir: '{{ ansible_facts.env.PWD }}'
     git_config_items: [ user.email, user.signingkey, format.pretty ]
+
+  vars_files: [ '{{ dir }}/paths.yml' ]
 
   tasks:
 
     - { meta: noop, name: top }
 
-    - include_vars: '{{ item }}'
+    - include_vars: '{{ dir }}/{{ item }}'
       loop: [ '{{ private_repos_file }}', '{{ keys_file }}' ]
       tags: always
 
@@ -25,20 +26,20 @@
       name: Define git_ssh_key_file
 
     - file:
-        path: '{{ workdir }}'
+        path: '{{ dir }}/{{ workdir }}'
         state: directory
       name: Create {{ workdir }}
 
     - git:
         repo: '{{ item.src }}'
         version: '{{ item.version }}'
-        dest: '{{ workdir }}/{{ item.name }}'
+        dest: '{{ dir }}/{{ workdir }}/{{ item.name }}'
         key_file: '{{ git_ssh_key_file }}'
       loop: '{{ private_repos }}'
       name: Get private repos
 
     - git_config:
-        repo: '{{ workdir }}/{{ item.name }}'
+        repo: '{{ dir }}/{{ workdir }}/{{ item.name }}'
         name: core.sshCommand
         scope: local
         value: ssh -i {{ git_ssh_key_file }} -F /dev/null
@@ -47,7 +48,7 @@
 
     - git_config:
         name: '{{ item }}'
-        repo: .
+        repo: '{{ dir }}'
         scope: local
       loop: '{{ git_config_items }}'
       register: git_config
@@ -55,7 +56,7 @@
       tags: conf
 
     - git_config:
-        repo: '{{ workdir }}/{{ item[0].name }}'
+        repo: '{{ dir }}/{{ workdir }}/{{ item[0].name }}'
         name: '{{ item[1].item }}'
         scope: local
         value: '{{ item[1].config_value }}'
