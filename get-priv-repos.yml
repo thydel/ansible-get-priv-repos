@@ -36,6 +36,8 @@
         dest: '{{ dir }}/{{ workdir }}/{{ item.name }}'
         key_file: '{{ git_ssh_key_file }}'
       loop: '{{ private_repos }}'
+      loop_control:
+        label: '{{ item.src }} {{ item.version }} {{ item.name }}'
       name: Get private repos
 
     - git_config:
@@ -44,6 +46,8 @@
         scope: local
         value: ssh -i {{ git_ssh_key_file }} -F /dev/null
       loop: '{{ private_repos }}'
+      loop_control:
+        label: '{{ item.name }} {{ git_ssh_key_file }}'
       name: Configure core.sshCommand
 
     - git_config:
@@ -52,7 +56,7 @@
         scope: local
       loop: '{{ git_config_items }}'
       register: git_config
-      name: Get user email from self git config
+      name: Get {{ git_config_items | join(', ') }} from self git config
       tags: conf
 
     - git_config:
