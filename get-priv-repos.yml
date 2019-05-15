@@ -4,7 +4,7 @@
 #- import_playbook: asserts.yml
 
 - hosts: localhost
-  gather_facts: False
+  gather_facts: True
 
   vars:
     dir: '{{ ansible_facts.env.PWD }}'
