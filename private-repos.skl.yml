@@ -1,0 +1,8 @@
+---
+
+private_repos:
+
+  - src: git@github.com:an_account/a_repos.git
+    name: a_name
+    version: master
+

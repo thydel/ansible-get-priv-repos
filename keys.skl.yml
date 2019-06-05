@@ -1,0 +1,5 @@
+---
+
+pro_key: &pro f.name@pro.tld
+perso_key: f.name@lperso.tld
+default_key: *pro
