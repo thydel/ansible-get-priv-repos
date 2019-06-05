@@ -2,9 +2,12 @@
 
 The `paths.yml` file define relative paths for
 
-- `private_repos_file` a `requirement.yml` like file for private data repos
+- `private_repos_file` a `requirement.yml` like file for private data
+  repos (See [private-repos.yml][] skeleton)
 - `keys_file` to define `default_key`, the default ssh key for private repos
 - `workdir` where to clone private data repos
+
+[private-repos.yml]: https://github.com/thydel/ansible-get-priv-repos/blob/master/private-repos.skl.yml "github.com file"
 
 # Get private repos
 
